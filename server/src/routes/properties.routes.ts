@@ -41,12 +41,18 @@ router.get(
   "/",
   optionalAdmin,
   asyncHandler(async (req: AuthedRequest, res) => {
-    const { type, city, minGuests, featured, status, checkIn, checkOut } = req.query;
+    const { type, city, minGuests, minBedrooms, maxPrice, petFriendly, featured, status, checkIn, checkOut } =
+      req.query;
     const filter: Record<string, unknown> = {};
 
     if (type) filter.type = type;
     if (city) filter["location.city"] = new RegExp(String(city), "i");
     if (minGuests) filter["capacity.maxGuests"] = { $gte: Number(minGuests) };
+    if (minBedrooms) filter["capacity.bedrooms"] = { $gte: Number(minBedrooms) };
+    if (maxPrice) filter["pricing.basePrice"] = { $lte: Number(maxPrice) };
+    // No dedicated pet-friendly field on Property — an admin tags it via the
+    // free-text `amenities` list instead, so this just matches that tag.
+    if (petFriendly === "true") filter.amenities = { $elemMatch: { $regex: /pet/i } };
     if (featured) filter.featured = featured === "true";
 
     if (checkIn && checkOut && typeof checkIn === "string" && typeof checkOut === "string") {

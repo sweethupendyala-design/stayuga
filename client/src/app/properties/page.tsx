@@ -16,6 +16,9 @@ interface PageProps {
     type?: string;
     city?: string;
     minGuests?: string;
+    minBedrooms?: string;
+    maxPrice?: string;
+    petFriendly?: string;
     checkIn?: string;
     checkOut?: string;
     sort?: string;
@@ -28,6 +31,9 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
   if (params.type) filters.type = params.type;
   if (params.city) filters.city = params.city;
   if (params.minGuests) filters.minGuests = params.minGuests;
+  if (params.minBedrooms) filters.minBedrooms = params.minBedrooms;
+  if (params.maxPrice) filters.maxPrice = params.maxPrice;
+  if (params.petFriendly) filters.petFriendly = params.petFriendly;
   if (params.checkIn) filters.checkIn = params.checkIn;
   if (params.checkOut) filters.checkOut = params.checkOut;
 
@@ -75,6 +81,9 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
           type={params.type}
           city={params.city}
           minGuests={params.minGuests}
+          minBedrooms={params.minBedrooms}
+          maxPrice={params.maxPrice}
+          petFriendly={params.petFriendly}
           checkIn={params.checkIn}
           checkOut={params.checkOut}
           sort={params.sort}
@@ -84,7 +93,15 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
       {/* Header Info Section */}
       <section className="mx-auto mb-8 flex max-w-7xl items-center justify-between px-6 text-xs uppercase tracking-widest">
         <span className="text-[11px] font-semibold tracking-[0.2em] text-stone-700">
-          {params.type || params.city || params.minGuests || params.checkIn ? "Filtered Villas" : "Featured Villas"}
+          {params.type ||
+          params.city ||
+          params.minGuests ||
+          params.minBedrooms ||
+          params.maxPrice ||
+          params.petFriendly ||
+          params.checkIn
+            ? "Filtered Villas"
+            : "Featured Villas"}
         </span>
         <span className="text-[11px] font-normal normal-case tracking-normal text-stone-400">
           {properties.length} {properties.length === 1 ? "villa" : "villas"} found

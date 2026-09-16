@@ -2,23 +2,44 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { MapPin, Calendar, Users, Home } from "lucide-react";
+import { MapPin, Calendar, Users, Home, BedDouble, PawPrint } from "lucide-react";
+import { formatPrice } from "@/lib/format";
+
+const PRICE_MIN = 5000;
+const PRICE_MAX = 100000;
+const PRICE_STEP = 1000;
 
 interface Props {
   type?: string;
   city?: string;
   minGuests?: string;
+  minBedrooms?: string;
+  maxPrice?: string;
+  petFriendly?: string;
   checkIn?: string;
   checkOut?: string;
   sort?: string;
 }
 
-export function StayFilters({ type, city, minGuests, checkIn, checkOut, sort }: Props) {
+export function StayFilters({
+  type,
+  city,
+  minGuests,
+  minBedrooms,
+  maxPrice,
+  petFriendly,
+  checkIn,
+  checkOut,
+  sort,
+}: Props) {
   const router = useRouter();
 
   const [selType, setSelType] = useState(type ?? "");
   const [selCity, setSelCity] = useState(city ?? "");
   const [selGuests, setSelGuests] = useState(minGuests ?? "");
+  const [selBedrooms, setSelBedrooms] = useState(minBedrooms ?? "");
+  const [selMaxPrice, setSelMaxPrice] = useState(Number(maxPrice) || PRICE_MAX);
+  const [selPetFriendly, setSelPetFriendly] = useState(petFriendly === "true");
   const [selCheckIn, setSelCheckIn] = useState(checkIn ?? "");
   const [selCheckOut, setSelCheckOut] = useState(checkOut ?? "");
   const [selSort, setSelSort] = useState(sort ?? "recommended");
@@ -28,6 +49,9 @@ export function StayFilters({ type, city, minGuests, checkIn, checkOut, sort }: 
     if (selType) params.set("type", selType);
     if (selCity) params.set("city", selCity);
     if (selGuests) params.set("minGuests", selGuests);
+    if (selBedrooms) params.set("minBedrooms", selBedrooms);
+    if (selMaxPrice < PRICE_MAX) params.set("maxPrice", String(selMaxPrice));
+    if (selPetFriendly) params.set("petFriendly", "true");
     if (selCheckIn) params.set("checkIn", selCheckIn);
     if (selCheckOut) params.set("checkOut", selCheckOut);
     const nextSort = overrides?.sort ?? selSort;
@@ -106,8 +130,8 @@ export function StayFilters({ type, city, minGuests, checkIn, checkOut, sort }: 
 
         <div className="h-px bg-stone-200" />
 
-        <div className="grid grid-cols-1 items-center gap-6 md:grid-cols-12">
-          <div className="md:col-span-5">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div>
             <span className="mb-1.5 block text-[10px] font-medium uppercase tracking-widest text-stone-500">
               Property Type
             </span>
@@ -132,44 +156,101 @@ export function StayFilters({ type, city, minGuests, checkIn, checkOut, sort }: 
             </div>
           </div>
 
-          <div className="flex justify-end gap-3 md:col-span-7">
-            <select
-              value={selSort}
-              onChange={(e) => {
-                setSelSort(e.target.value);
-                apply({ sort: e.target.value });
-              }}
-              className="rounded border border-stone-300 bg-white px-3 py-2 text-xs text-stone-800 focus:outline-none"
-            >
-              <option value="recommended">Recommended</option>
-              <option value="price-low">Price: Low to High</option>
-              <option value="price-high">Price: High to Low</option>
-            </select>
-
-            <button
-              type="button"
-              onClick={() => apply()}
-              className="rounded-full bg-[#181113] px-6 py-2 text-xs font-medium uppercase tracking-widest text-white transition-colors hover:bg-[#8c7456]"
-            >
-              Search
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
-                setSelType("");
-                setSelCity("");
-                setSelGuests("");
-                setSelCheckIn("");
-                setSelCheckOut("");
-                setSelSort("recommended");
-                router.push("/properties");
-              }}
-              className="rounded-full border border-stone-300 px-5 py-2 text-xs uppercase tracking-widest text-stone-600 transition-colors hover:border-stone-900 hover:text-stone-900"
-            >
-              Clear
-            </button>
+          <div>
+            <span className="mb-1.5 block text-[10px] font-medium uppercase tracking-widest text-stone-500">
+              Bedrooms
+            </span>
+            <div className="flex items-center gap-2 text-xs text-stone-800">
+              <BedDouble size={15} className="shrink-0 text-stone-500" />
+              <select
+                value={selBedrooms}
+                onChange={(e) => setSelBedrooms(e.target.value)}
+                className="w-full bg-transparent text-xs text-stone-800 focus:outline-none"
+              >
+                <option value="">Any</option>
+                <option value="3">3+ Bedrooms</option>
+                <option value="4">4+ Bedrooms</option>
+                <option value="5">5+ Bedrooms</option>
+              </select>
+            </div>
           </div>
+
+          <div className="flex items-end pb-0.5">
+            <label className="flex cursor-pointer select-none items-center gap-2.5 text-xs text-stone-700">
+              <input
+                type="checkbox"
+                checked={selPetFriendly}
+                onChange={(e) => setSelPetFriendly(e.target.checked)}
+                className="h-4 w-4 cursor-pointer rounded border-stone-300 accent-gold"
+              />
+              <PawPrint size={15} className="shrink-0 text-stone-500" />
+              Pet-friendly
+            </label>
+          </div>
+
+          <div>
+            <div className="mb-1.5 flex items-center justify-between">
+              <span className="text-[10px] font-medium uppercase tracking-widest text-stone-500">
+                Price Range
+              </span>
+              <span className="text-[11px] text-stone-600">
+                {selMaxPrice >= PRICE_MAX ? "Any" : `Up to ${formatPrice(selMaxPrice)}`}
+              </span>
+            </div>
+            <input
+              type="range"
+              min={PRICE_MIN}
+              max={PRICE_MAX}
+              step={PRICE_STEP}
+              value={selMaxPrice}
+              onChange={(e) => setSelMaxPrice(Number(e.target.value))}
+              className="h-1 w-full cursor-pointer appearance-none rounded-lg bg-stone-300 accent-gold"
+            />
+          </div>
+        </div>
+
+        <div className="h-px bg-stone-200" />
+
+        <div className="flex flex-wrap items-center justify-end gap-3">
+          <select
+            value={selSort}
+            onChange={(e) => {
+              setSelSort(e.target.value);
+              apply({ sort: e.target.value });
+            }}
+            className="rounded border border-stone-300 bg-white px-3 py-2 text-xs text-stone-800 focus:outline-none"
+          >
+            <option value="recommended">Recommended</option>
+            <option value="price-low">Price: Low to High</option>
+            <option value="price-high">Price: High to Low</option>
+          </select>
+
+          <button
+            type="button"
+            onClick={() => apply()}
+            className="rounded-full bg-[#181113] px-6 py-2 text-xs font-medium uppercase tracking-widest text-white transition-colors hover:bg-[#8c7456]"
+          >
+            Search
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              setSelType("");
+              setSelCity("");
+              setSelGuests("");
+              setSelBedrooms("");
+              setSelMaxPrice(PRICE_MAX);
+              setSelPetFriendly(false);
+              setSelCheckIn("");
+              setSelCheckOut("");
+              setSelSort("recommended");
+              router.push("/properties");
+            }}
+            className="rounded-full border border-stone-300 px-5 py-2 text-xs uppercase tracking-widest text-stone-600 transition-colors hover:border-stone-900 hover:text-stone-900"
+          >
+            Clear
+          </button>
         </div>
       </div>
     </div>
