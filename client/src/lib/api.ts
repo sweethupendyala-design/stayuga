@@ -1,0 +1,78 @@
+// `||` (not `??`) so a blank-but-set env var (e.g. left empty in a Vercel
+// project's dashboard) also falls back, instead of resolving to "" and
+// silently turning every request into a same-origin relative fetch.
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:4000";
+
+export class ApiRequestError extends Error {
+  status: number;
+  fields?: Record<string, string>;
+  constructor(status: number, message: string, fields?: Record<string, string>) {
+    super(message);
+    this.status = status;
+    this.fields = fields;
+  }
+}
+
+interface ApiFetchOptions extends RequestInit {
+  token?: string;
+}
+
+export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): Promise<T> {
+  const { token, headers, ...rest } = options;
+
+  const controller = new AbortController();
+  let timedOut = false;
+  const timer = setTimeout(() => {
+    timedOut = true;
+    controller.abort("timeout");
+  }, 10_000);
+
+  let res: Response;
+  try {
+    res = await fetch(`${API_URL}${path}`, {
+      signal: controller.signal,
+      ...rest,
+      headers: {
+        ...(rest.body ? { "Content-Type": "application/json" } : {}),
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...headers,
+      },
+      cache: rest.cache ?? "no-store",
+    });
+  } catch (err) {
+    if (timedOut) throw new ApiRequestError(408, "Request timed out — please try again");
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({ error: res.statusText }));
+    throw new ApiRequestError(res.status, body.error ?? "Request failed", body.fields);
+  }
+
+  if (res.status === 204) return undefined as T;
+  return res.json() as Promise<T>;
+}
+
+export async function uploadImage(file: File, token: string): Promise<string> {
+  const formData = new FormData();
+  formData.append("image", file);
+
+  const res = await fetch(`${API_URL}/api/uploads`, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    body: formData,
+  });
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({ error: res.statusText }));
+    throw new ApiRequestError(res.status, body.error ?? "Upload failed");
+  }
+
+  const { url } = (await res.json()) as { url: string };
+  // Local-disk uploads return a relative path; Cloudinary returns an absolute URL.
+  return url.startsWith("http") ? url : `${API_URL}${url}`;
+}
+
+export { API_URL };
