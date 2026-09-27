@@ -1,5 +1,10 @@
 import { apiFetch } from "@/lib/api";
-import { ContentBlocks, Experience, FaqItem, PolicyPage, Property, Testimonial } from "@/lib/types";
+import { ContentBlocks, Experience, FaqItem, PolicyPage, Property, Service, Testimonial } from "@/lib/types";
+
+export async function getServices() {
+  const { services } = await apiFetch<{ services: Service[] }>("/api/services");
+  return services;
+}
 
 export async function getProperties(params?: Record<string, string>) {
   const query = params ? `?${new URLSearchParams(params).toString()}` : "";

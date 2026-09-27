@@ -41,15 +41,26 @@ router.get(
   "/",
   optionalAdmin,
   asyncHandler(async (req: AuthedRequest, res) => {
-    const { type, city, minGuests, minBedrooms, maxPrice, petFriendly, featured, status, checkIn, checkOut } =
+    const { q, city, minGuests, minBedrooms, minPrice, maxPrice, petFriendly, featured, status, checkIn, checkOut } =
       req.query;
     const filter: Record<string, unknown> = {};
 
-    if (type) filter.type = type;
+    // `q` is the single guest-facing search box — it matches a stay's name
+    // or its location, so guests don't need to know which one they're typing.
+    if (q) {
+      const re = new RegExp(String(q), "i");
+      filter.$or = [{ title: re }, { "location.city": re }, { "location.state": re }];
+    }
+    // `city` stays supported on its own for any direct/legacy callers.
     if (city) filter["location.city"] = new RegExp(String(city), "i");
     if (minGuests) filter["capacity.maxGuests"] = { $gte: Number(minGuests) };
     if (minBedrooms) filter["capacity.bedrooms"] = { $gte: Number(minBedrooms) };
-    if (maxPrice) filter["pricing.basePrice"] = { $lte: Number(maxPrice) };
+    if (minPrice || maxPrice) {
+      filter["pricing.basePrice"] = {
+        ...(minPrice ? { $gte: Number(minPrice) } : {}),
+        ...(maxPrice ? { $lte: Number(maxPrice) } : {}),
+      };
+    }
     // No dedicated pet-friendly field on Property — an admin tags it via the
     // free-text `amenities` list instead, so this just matches that tag.
     if (petFriendly === "true") filter.amenities = { $elemMatch: { $regex: /pet/i } };

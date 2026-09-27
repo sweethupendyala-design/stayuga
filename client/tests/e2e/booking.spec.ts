@@ -22,8 +22,8 @@ test.describe("Contact form", () => {
 test.describe("Booking inquiry form", () => {
   test("Send enquiry button is visible on a property page", async ({ page }) => {
     // Navigate to properties list and open the first property
-    await page.goto("/properties");
-    const firstCard = page.locator("a[href^='/properties/']").first();
+    await page.goto("/stays");
+    const firstCard = page.locator("a[href^='/stays/']").first();
     await firstCard.click();
     await page.waitForLoadState("networkidle");
 
@@ -32,8 +32,8 @@ test.describe("Booking inquiry form", () => {
   });
 
   test("Send enquiry is disabled when required fields are empty", async ({ page }) => {
-    await page.goto("/properties");
-    const firstCard = page.locator("a[href^='/properties/']").first();
+    await page.goto("/stays");
+    const firstCard = page.locator("a[href^='/stays/']").first();
     await firstCard.click();
     await page.waitForLoadState("networkidle");
 
@@ -41,8 +41,8 @@ test.describe("Booking inquiry form", () => {
   });
 
   test("WhatsApp enquiry button is visible", async ({ page }) => {
-    await page.goto("/properties");
-    const firstCard = page.locator("a[href^='/properties/']").first();
+    await page.goto("/stays");
+    const firstCard = page.locator("a[href^='/stays/']").first();
     await firstCard.click();
     await page.waitForLoadState("networkidle");
 
@@ -55,13 +55,13 @@ test.describe("Homepage CTAs", () => {
     await page.goto("/");
   });
 
-  test("Browse properties button links to /properties", async ({ page }) => {
-    await expect(page.getByRole("link", { name: /browse properties/i })).toHaveAttribute("href", "/properties");
+  test("Browse stays button links to /stays", async ({ page }) => {
+    await expect(page.getByRole("link", { name: /browse stays/i })).toHaveAttribute("href", "/stays");
   });
 
   test("View all properties link navigates correctly", async ({ page }) => {
     await page.getByRole("link", { name: /view all properties/i }).click();
-    await expect(page).toHaveURL("/properties");
+    await expect(page).toHaveURL("/stays");
   });
 
   test("View all experiences link navigates correctly", async ({ page }) => {

@@ -7,8 +7,8 @@ test.describe("Header navigation", () => {
   });
 
   test("Properties nav link navigates correctly", async ({ page }) => {
-    await page.getByRole("navigation").getByRole("link", { name: /^properties$/i }).click();
-    await expect(page).toHaveURL("/properties");
+    await page.getByRole("navigation").getByRole("link", { name: /^stays$/i }).click();
+    await expect(page).toHaveURL("/stays");
   });
 
   test("Experiences nav link navigates correctly", async ({ page }) => {
@@ -33,7 +33,7 @@ test.describe("Header navigation", () => {
 
   test("Book a stay CTA button navigates to properties", async ({ page }) => {
     await page.getByRole("link", { name: /book a stay/i }).first().click();
-    await expect(page).toHaveURL("/properties");
+    await expect(page).toHaveURL("/stays");
   });
 });
 
@@ -44,8 +44,8 @@ test.describe("Footer links", () => {
   });
 
   test("footer Properties link works", async ({ page }) => {
-    await page.getByRole("contentinfo").getByRole("link", { name: /^properties$/i }).click();
-    await expect(page).toHaveURL("/properties");
+    await page.getByRole("contentinfo").getByRole("link", { name: /^stays$/i }).click();
+    await expect(page).toHaveURL("/stays");
   });
 
   test("footer Experiences link works", async ({ page }) => {

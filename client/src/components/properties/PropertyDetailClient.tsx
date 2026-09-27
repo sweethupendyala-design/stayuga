@@ -254,7 +254,7 @@ export function PropertyDetailClient({ property }: Props) {
 
         <div className="relative z-10 mx-auto w-full max-w-7xl px-4 pb-8 sm:px-6 sm:pb-10 lg:px-8">
           <Link
-            href="/properties"
+            href="/stays"
             className="link-inline mb-3 inline-flex items-center gap-1.5 text-[11px] uppercase tracking-widest text-gold-light transition-colors hover:text-white sm:mb-4"
           >
             <ArrowLeft size={13} /> Back to Stays

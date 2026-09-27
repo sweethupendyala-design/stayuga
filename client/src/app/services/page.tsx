@@ -1,8 +1,13 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { Sparkles } from "lucide-react";
 import { EVENT_SERVICES, STAY_SERVICES, type ServiceItem } from "@/lib/services";
+import { getServices } from "@/lib/data";
 import { formatPrice } from "@/lib/format";
+import { ICONS } from "@/components/properties/amenityIcons";
+import type { IconKey } from "@/lib/addOnServices";
+import type { Service } from "@/lib/types";
 
 export const metadata: Metadata = {
   title: "Services",
@@ -13,6 +18,23 @@ export const metadata: Metadata = {
 function priceLabel(service: ServiceItem) {
   if (service.priceFrom === null) return "Included";
   return `From ${formatPrice(service.priceFrom)}${service.unit ? ` ${service.unit}` : ""}`;
+}
+
+/** Maps an admin-managed API record onto the same shape the page already renders. */
+function toServiceItem(service: Service): ServiceItem {
+  return {
+    title: service.title,
+    desc: service.desc,
+    // Falls back to a neutral icon if an admin picks a key that isn't in the
+    // shared map yet — never lets a bad icon key break the page.
+    icon: ICONS[service.icon as IconKey] ?? Sparkles,
+    category: service.category,
+    priceFrom: service.priceFrom,
+    unit: service.unit,
+    image: service.image,
+    promoText: service.promoText,
+    comingSoon: service.comingSoon,
+  };
 }
 
 function ServiceGrid({ items }: { items: ServiceItem[] }) {
@@ -29,8 +51,18 @@ function ServiceGrid({ items }: { items: ServiceItem[] }) {
               alt=""
               fill
               sizes="(max-width: 640px) 100vw, 20vw"
-              className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              className={`object-cover transition-transform duration-700 ease-out group-hover:scale-105 ${
+                service.comingSoon ? "blur-[3px] scale-105" : ""
+              }`}
             />
+            {service.comingSoon && (
+              <>
+                <div className="absolute inset-0 bg-ink/15" aria-hidden="true" />
+                <span className="absolute left-0 top-4 bg-ink px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.2em] text-gold-light shadow-md">
+                  Coming Soon
+                </span>
+              </>
+            )}
           </div>
 
           <div className="flex flex-1 flex-col justify-between p-6">
@@ -43,18 +75,29 @@ function ServiceGrid({ items }: { items: ServiceItem[] }) {
               />
               <h3 className="font-display mb-2 text-xl font-normal text-ink">{service.title}</h3>
               <p className="text-sm font-light leading-relaxed text-ink-soft">{service.desc}</p>
+              {service.promoText && (
+                <p className="mt-2 text-xs font-medium italic leading-relaxed text-gold">
+                  {service.promoText}
+                </p>
+              )}
             </div>
 
             <div className="mt-6 flex items-center justify-between border-t border-line pt-4">
               <span className="text-xs font-medium tracking-wide text-gold">
                 {priceLabel(service)}
               </span>
-              <Link
-                href="/properties"
-                className="link-inline text-[11px] font-semibold uppercase tracking-widest text-ink transition-colors hover:text-gold"
-              >
-                Enquire &rarr;
-              </Link>
+              {service.comingSoon ? (
+                <span className="text-[11px] font-semibold uppercase tracking-widest text-ink-soft/60">
+                  Not yet available
+                </span>
+              ) : (
+                <Link
+                  href="/stays"
+                  className="link-inline text-[11px] font-semibold uppercase tracking-widest text-ink transition-colors hover:text-gold"
+                >
+                  Enquire &rarr;
+                </Link>
+              )}
             </div>
           </div>
         </article>
@@ -63,7 +106,21 @@ function ServiceGrid({ items }: { items: ServiceItem[] }) {
   );
 }
 
-export default function ServicesPage() {
+export default async function ServicesPage() {
+  const apiServices = await getServices().catch(() => []);
+
+  // Prefer the admin-managed catalogue; only fall back to the static list
+  // (kept in lib/services.ts) if the API hasn't been seeded yet or is briefly
+  // unreachable, so the page is never empty.
+  const stayServices =
+    apiServices.length > 0
+      ? apiServices.filter((s) => s.category === "stay").map(toServiceItem)
+      : STAY_SERVICES;
+  const eventServices =
+    apiServices.length > 0
+      ? apiServices.filter((s) => s.category === "event").map(toServiceItem)
+      : EVENT_SERVICES;
+
   return (
     <div className="min-h-screen bg-cream pt-20 text-ink">
       {/* ---------------- Intro ---------------- */}
@@ -89,7 +146,7 @@ export default function ServicesPage() {
           </p>
         </header>
 
-        <ServiceGrid items={STAY_SERVICES} />
+        <ServiceGrid items={stayServices} />
       </section>
 
       {/* ---------------- Event services ---------------- */}
@@ -105,7 +162,7 @@ export default function ServicesPage() {
             </p>
           </header>
 
-          <ServiceGrid items={EVENT_SERVICES} />
+          <ServiceGrid items={eventServices} />
         </div>
       </section>
 

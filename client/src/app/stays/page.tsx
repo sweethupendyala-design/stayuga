@@ -1,8 +1,10 @@
 import { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { Sparkles, HeartHandshake, BadgeCheck, PartyPopper } from "lucide-react";
 import { getProperties } from "@/lib/data";
 import { formatPrice } from "@/lib/format";
+import { AmenityIcon, guessAmenityIcon } from "@/components/properties/amenityIcons";
 import { StayFilters } from "@/components/properties/StayFilters";
 
 export const metadata: Metadata = {
@@ -13,10 +15,10 @@ export const metadata: Metadata = {
 
 interface PageProps {
   searchParams: Promise<{
-    type?: string;
-    city?: string;
+    search?: string;
     minGuests?: string;
     minBedrooms?: string;
+    minPrice?: string;
     maxPrice?: string;
     petFriendly?: string;
     checkIn?: string;
@@ -25,13 +27,23 @@ interface PageProps {
   }>;
 }
 
-export default async function PropertiesPage({ searchParams }: PageProps) {
+/** Bottom value-prop strip — icon paired with each promise, in display order. */
+const VALUE_PROPS = [
+  { label: "Curated stay", icon: Sparkles },
+  { label: "Personalized Concierge", icon: HeartHandshake },
+  { label: "No Extra Costs", icon: BadgeCheck },
+  { label: "Memorable Experiences", icon: PartyPopper },
+];
+
+export default async function StaysPage({ searchParams }: PageProps) {
   const params = await searchParams;
   const filters: Record<string, string> = {};
-  if (params.type) filters.type = params.type;
-  if (params.city) filters.city = params.city;
+  // "search" covers both a stay's name and its location — the API matches
+  // either, so guests don't have to know which one they're typing.
+  if (params.search) filters.q = params.search;
   if (params.minGuests) filters.minGuests = params.minGuests;
   if (params.minBedrooms) filters.minBedrooms = params.minBedrooms;
+  if (params.minPrice) filters.minPrice = params.minPrice;
   if (params.maxPrice) filters.maxPrice = params.maxPrice;
   if (params.petFriendly) filters.petFriendly = params.petFriendly;
   if (params.checkIn) filters.checkIn = params.checkIn;
@@ -78,10 +90,10 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
       {/* Floating Filter Box */}
       <div className="mb-16">
         <StayFilters
-          type={params.type}
-          city={params.city}
+          search={params.search}
           minGuests={params.minGuests}
           minBedrooms={params.minBedrooms}
+          minPrice={params.minPrice}
           maxPrice={params.maxPrice}
           petFriendly={params.petFriendly}
           checkIn={params.checkIn}
@@ -93,10 +105,10 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
       {/* Header Info Section */}
       <section className="mx-auto mb-8 flex max-w-7xl items-center justify-between px-6 text-xs uppercase tracking-widest">
         <span className="text-[11px] font-semibold tracking-[0.2em] text-stone-700">
-          {params.type ||
-          params.city ||
+          {params.search ||
           params.minGuests ||
           params.minBedrooms ||
+          params.minPrice ||
           params.maxPrice ||
           params.petFriendly ||
           params.checkIn
@@ -119,7 +131,7 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
             {properties.map((property) => (
               <Link
                 key={property._id}
-                href={`/properties/${property.slug}`}
+                href={`/stays/${property.slug}`}
                 className="group flex flex-col overflow-hidden rounded-lg border border-stone-200/70 bg-white transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
               >
                 <div className="relative h-72 w-full overflow-hidden">
@@ -151,7 +163,7 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
                       {property.title}
                     </h3>
 
-                    <div className="mb-6 flex items-center gap-5 text-[11px] text-stone-600">
+                    <div className="mb-4 flex items-center gap-5 text-[11px] text-stone-600">
                       <div className="flex items-center gap-1.5">
                         <BedIcon />
                         <span>{property.capacity.bedrooms} Bedrooms</span>
@@ -165,6 +177,17 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
                         <span className="capitalize">{property.type}</span>
                       </div>
                     </div>
+
+                    {property.amenities.length > 0 && (
+                      <div className="mb-6 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[10px] font-semibold uppercase tracking-wide text-gold">
+                        {property.amenities.slice(0, 3).map((label) => (
+                          <span key={label} className="flex items-center gap-1.5">
+                            <AmenityIcon name={guessAmenityIcon(label)} size={13} />
+                            {label}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   <div className="mt-2 flex items-center justify-between border-t border-stone-100 pt-4">
@@ -214,15 +237,12 @@ export default async function PropertiesPage({ searchParams }: PageProps) {
         </div>
 
         <div className="flex flex-col justify-center gap-6 bg-shell p-8 md:p-12 lg:col-span-4">
-          {[
-            { label: "Curated stay" },
-            { label: "Personalized Concierge" },
-            { label: "No Extra Costs" },
-            { label: "Memorable Experiences" },
-          ].map((item) => (
-            <div key={item.label} className="flex items-center gap-4">
-              <span className="h-2 w-2 shrink-0 rounded-full bg-gold" />
-              <span className="text-xs tracking-wider text-stone-700">{item.label}</span>
+          {VALUE_PROPS.map(({ label, icon: Icon }) => (
+            <div key={label} className="flex items-center gap-4">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gold/15 text-gold">
+                <Icon size={15} strokeWidth={1.6} aria-hidden="true" />
+              </span>
+              <span className="text-xs tracking-wider text-stone-700">{label}</span>
             </div>
           ))}
         </div>

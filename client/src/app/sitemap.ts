@@ -3,7 +3,7 @@ import { getProperties } from "@/lib/data";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
-const STATIC_ROUTES = ["", "/properties", "/services", "/events", "/experiences", "/about", "/faq", "/contact"];
+const STATIC_ROUTES = ["", "/stays", "/services", "/events", "/experiences", "/about", "/faq"];
 const POLICY_SLUGS = ["terms", "privacy", "cancellation"];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -20,7 +20,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   const propertyEntries: MetadataRoute.Sitemap = properties.map((p) => ({
-    url: `${siteUrl}/properties/${p.slug}`,
+    url: `${siteUrl}/stays/${p.slug}`,
     lastModified: p.updatedAt ? new Date(p.updatedAt) : new Date(),
   }));
 

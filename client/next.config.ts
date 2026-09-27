@@ -10,6 +10,16 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "*.up.railway.app", pathname: "/uploads/**" },
     ],
   },
+  async redirects() {
+    return [
+      // The public stays listing moved from /properties to /stays — keep old
+      // bookmarks and any indexed links working with a permanent redirect.
+      { source: "/properties", destination: "/stays", permanent: true },
+      { source: "/properties/:slug", destination: "/stays/:slug", permanent: true },
+      // Contact Us now lives inside the About page.
+      { source: "/contact", destination: "/about#contact", permanent: true },
+    ];
+  },
 };
 
 export default nextConfig;

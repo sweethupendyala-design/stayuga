@@ -5,8 +5,10 @@ import {
   Camera,
   Car,
   ChefHat,
+  Coffee,
   Flame,
   Flower2,
+  Mountain,
   Music,
   PartyPopper,
   PawPrint,
@@ -48,6 +50,8 @@ export const ICONS: Record<IconKey, LucideIcon> = {
   transport: Car,
   spa: Flower2,
   music: Music,
+  breakfast: Coffee,
+  view: Mountain,
 };
 
 /** Best-effort keyword match from a free-text amenity label to an icon. */
@@ -67,7 +71,9 @@ export function guessAmenityIcon(label: string): IconKey {
   if (l.includes("chef")) return "chef";
   if (l.includes("spa") || l.includes("yoga") || l.includes("wellness")) return "spa";
   if (l.includes("power") || l.includes("generator") || l.includes("backup")) return "concierge";
-  if (l.includes("lake") || l.includes("view")) return "garden";
+  if (l.includes("breakfast")) return "breakfast";
+  if (l.includes("lake") || l.includes("view") || l.includes("mountain") || l.includes("valley")) return "view";
+  if (l.includes("orchard")) return "garden";
   return "concierge";
 }
 

@@ -4,6 +4,7 @@ import { PropertyModel } from "./models/Property";
 import { ExperienceModel } from "./models/Experience";
 import { AdminUserModel } from "./models/AdminUser";
 import { ContentBlockModel, FaqItemModel, PolicyPageModel } from "./models/ContentBlock";
+import { ServiceModel } from "./models/Service";
 import mongoose from "mongoose";
 
 const PLACEHOLDER_IMAGES = [
@@ -22,6 +23,7 @@ async function seed() {
     ContentBlockModel.deleteMany({}),
     FaqItemModel.deleteMany({}),
     PolicyPageModel.deleteMany({}),
+    ServiceModel.deleteMany({}),
   ]);
 
   const passwordHash = await bcrypt.hash("Stayuga@123", 10);
@@ -175,6 +177,131 @@ async function seed() {
       title: "Cancellation Policy",
       content:
         "Cancellations made 7+ days before check-in receive a full refund. Cancellations within 7 days are subject to the individual property's policy, shared at the time of booking confirmation.",
+    },
+  ]);
+
+  await ServiceModel.insertMany([
+    // ---------------- Stay services ----------------
+    {
+      title: "Private Chef",
+      desc: "A menu written around your table, cooked in your kitchen.",
+      icon: "chef",
+      category: "stay",
+      priceFrom: 1200,
+      unit: "per guest",
+      image: "https://images.unsplash.com/photo-1544984243-ec57ea16fe25?q=80&w=800&auto=format&fit=crop",
+      order: 1,
+    },
+    {
+      title: "Concierge",
+      desc: "One number. Any hour of your stay.",
+      icon: "concierge",
+      category: "stay",
+      priceFrom: null,
+      image: "https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=800&auto=format&fit=crop",
+      order: 2,
+    },
+    {
+      title: "Wellness & Spa",
+      desc: "Sunrise yoga, therapists who come to you.",
+      icon: "spa",
+      category: "stay",
+      priceFrom: 2500,
+      unit: "per session",
+      image: "https://images.unsplash.com/photo-1545205597-3d9d02c29597?q=80&w=800&auto=format&fit=crop",
+      order: 3,
+    },
+    {
+      title: "Chauffeur",
+      desc: "Airport to gate, and everywhere between.",
+      icon: "transport",
+      category: "stay",
+      priceFrom: 4500,
+      unit: "per day",
+      image: "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=800&auto=format&fit=crop",
+      order: 4,
+    },
+    {
+      title: "Housekeeping",
+      desc: "Discreet, twice daily.",
+      icon: "housekeeping",
+      category: "stay",
+      priceFrom: null,
+      image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800&auto=format&fit=crop",
+      order: 5,
+    },
+    {
+      title: "Excursions",
+      desc: "Lakes, trails and temples worth the early start.",
+      icon: "garden",
+      category: "stay",
+      priceFrom: 3000,
+      unit: "per group",
+      image: "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?q=80&w=800&auto=format&fit=crop",
+      order: 6,
+      comingSoon: true,
+      promoText: "Launching with our Himachal and Western Ghats properties first.",
+    },
+    // ---------------- Event services ----------------
+    {
+      title: "Event Management",
+      desc: "One team from first walkthrough to last guest.",
+      icon: "decor",
+      category: "event",
+      priceFrom: 75000,
+      unit: "per event",
+      image: "https://images.unsplash.com/photo-1519671482749-fd09be7ccebf?q=80&w=800&auto=format&fit=crop",
+      order: 1,
+    },
+    {
+      title: "Décor & Theming",
+      desc: "Built to your occasion, not pulled off a shelf.",
+      icon: "decor",
+      category: "event",
+      priceFrom: 35000,
+      unit: "per event",
+      image: "https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&auto=format&fit=crop",
+      order: 2,
+    },
+    {
+      title: "Catering & Bar",
+      desc: "Regional, continental or entirely your own.",
+      icon: "kitchen",
+      category: "event",
+      priceFrom: 950,
+      unit: "per guest",
+      image: "https://images.unsplash.com/photo-1555244162-803834f70033?q=80&w=800&auto=format&fit=crop",
+      order: 3,
+    },
+    {
+      title: "Photography & Film",
+      desc: "The day, kept properly.",
+      icon: "photography",
+      category: "event",
+      priceFrom: 25000,
+      unit: "per event",
+      image: "https://images.unsplash.com/photo-1502920917128-1aa500764cbd?q=80&w=800&auto=format&fit=crop",
+      order: 4,
+    },
+    {
+      title: "Entertainment",
+      desc: "Live sets, DJs and sound, tuned to the space.",
+      icon: "music",
+      category: "event",
+      priceFrom: 18000,
+      unit: "per event",
+      image: "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=800&auto=format&fit=crop",
+      order: 5,
+    },
+    {
+      title: "Celebrations",
+      desc: "Anniversaries, birthdays, reunions — handled.",
+      icon: "decor",
+      category: "event",
+      priceFrom: 20000,
+      unit: "per event",
+      image: "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?q=80&w=800&auto=format&fit=crop",
+      order: 6,
     },
   ]);
 

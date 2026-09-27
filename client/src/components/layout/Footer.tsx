@@ -22,6 +22,8 @@ import { ContactInfo, ContentBlocks } from "@/lib/types";
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 const FACEBOOK_URL = "https://www.facebook.com/people/Stayuga/61591592071847/";
+// TODO: swap in Stayuga's real LinkedIn company page URL once it exists.
+const LINKEDIN_URL = "https://www.linkedin.com/company/stayuga/";
 
 const columns: Variants = {
   hidden: {},
@@ -124,7 +126,7 @@ export function Footer() {
               </li>
             ))}
             <li>
-              <FooterLink href="/contact">Contact</FooterLink>
+              <FooterLink href="/about#contact">Contact</FooterLink>
             </li>
           </ul>
         </motion.div>
@@ -169,6 +171,12 @@ export function Footer() {
             <Social href={FACEBOOK_URL} label="Facebook">
               <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24">
                 <path d="M22.675 0h-21.35c-.732 0-1.325.593-1.325 1.325v21.351c0 .731.593 1.324 1.325 1.324h11.495v-9.294h-3.128v-3.622h3.128v-2.671c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12v9.293h6.116c.73 0 1.323-.593 1.323-1.325v-21.35c0-.732-.593-1.325-1.325-1.325z" />
+              </svg>
+            </Social>
+
+            <Social href={LINKEDIN_URL} label="LinkedIn">
+              <svg className="h-4 w-4 fill-current" viewBox="0 0 24 24">
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 1 1 0-4.124 2.062 2.062 0 0 1 0 4.124zM7.119 20.452H3.554V9h3.565v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
               </svg>
             </Social>
           </div>

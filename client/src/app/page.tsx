@@ -4,6 +4,7 @@ import { BedDouble, Bath, Waves } from "lucide-react";
 import { emptyContent, getContent, getProperties } from "@/lib/data";
 import { STAY_SERVICES } from "@/lib/services";
 import { formatPrice } from "@/lib/format";
+import { AmenityIcon, guessAmenityIcon } from "@/components/properties/amenityIcons";
 
 export default async function HomePage() {
   const [properties, content] = await Promise.all([
@@ -48,7 +49,7 @@ export default async function HomePage() {
             </p>
 
             <Link
-              href="/properties"
+              href="/stays"
               className="inline-flex items-center gap-4 border border-gold/80 px-8 py-3.5 text-[11px] uppercase tracking-[0.3em] text-cream transition-all duration-300 hover:border-gold hover:bg-gold/10"
             >
               <span>View the collection</span>
@@ -70,7 +71,7 @@ export default async function HomePage() {
             </h2>
           </div>
           <Link
-            href="/properties"
+            href="/stays"
             className="link-inline mt-6 self-start border-b border-ink pb-0.5 text-[11px] uppercase tracking-[0.3em] text-ink transition-colors hover:border-gold hover:text-gold sm:mt-0 sm:self-end"
           >
             View all
@@ -84,7 +85,7 @@ export default async function HomePage() {
             {properties.slice(0, 3).map((property) => (
               <Link
                 key={property._id}
-                href={`/properties/${property.slug}`}
+                href={`/stays/${property.slug}`}
                 className="group flex flex-col"
               >
                 <div className="relative mb-6 aspect-square w-full overflow-hidden bg-sand">
@@ -107,7 +108,7 @@ export default async function HomePage() {
                   {property.title}
                 </h3>
 
-                <div className="mb-6 flex items-center gap-4 text-[13px] font-light text-ink-soft">
+                <div className="mb-4 flex items-center gap-4 text-[13px] font-light text-ink-soft">
                   <span className="flex items-center gap-1.5">
                     <BedDouble size={14} strokeWidth={1.6} aria-hidden="true" />
                     {property.capacity.bedrooms} bed
@@ -121,6 +122,17 @@ export default async function HomePage() {
                     {property.type}
                   </span>
                 </div>
+
+                {property.amenities.length > 0 && (
+                  <div className="mb-6 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] font-light uppercase tracking-wide text-gold">
+                    {property.amenities.slice(0, 3).map((label) => (
+                      <span key={label} className="flex items-center gap-1.5">
+                        <AmenityIcon name={guessAmenityIcon(label)} size={13} />
+                        {label}
+                      </span>
+                    ))}
+                  </div>
+                )}
 
                 <div className="mt-auto flex items-center justify-between border-t border-line pt-4">
                   <div className="font-display text-base text-ink">
@@ -226,7 +238,7 @@ export default async function HomePage() {
             Your dates are probably still open
           </h2>
           <Link
-            href="/properties"
+            href="/stays"
             className="shrink-0 bg-gold px-10 py-3.5 text-[11px] font-medium uppercase tracking-[0.25em] text-ink transition-colors hover:bg-gold-light"
           >
             Reserve

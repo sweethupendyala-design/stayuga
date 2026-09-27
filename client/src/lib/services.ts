@@ -9,8 +9,11 @@ import {
  *   "stay"  — what we arrange around a booked farmhouse
  *   "event" — what we arrange when the farmhouse is the venue
  *
- * Both the home page and /services read from here so wording and pricing
- * can't drift apart between the two.
+ * The home page's "Service" strip always reads from here. The full
+ * `/services` page is admin-managed via `/api/services` (see
+ * `ServicesManager` in the admin content page) — this array is only used
+ * there as a fallback if that API is empty or briefly unreachable, so the
+ * page never renders blank.
  *
  * `priceFrom` is a rupee amount rendered through `formatPrice`, so currency
  * formatting stays consistent with the property pages. `null` means the
@@ -30,6 +33,10 @@ export interface ServiceItem {
   /** Suffix shown after the price, e.g. "per guest". */
   unit?: string;
   image: string;
+  /** Promotional blurb shown alongside the image on the /services page. */
+  promoText?: string;
+  /** Shows a "Coming Soon" banner and blurs the image on /services. */
+  comingSoon?: boolean;
 }
 
 export const SERVICES: ServiceItem[] = [

@@ -1,12 +1,12 @@
 export interface NavItem {
   label: string;
   href: string;
-  /** Match nested routes too, e.g. /properties/the-olive-retreat */
+  /** Match nested routes too, e.g. /stays/the-olive-retreat */
   matchPrefix?: boolean;
 }
 
 export const NAV_ITEMS: NavItem[] = [
-  { label: "Stays", href: "/properties", matchPrefix: true },
+  { label: "Stays", href: "/stays", matchPrefix: true },
   { label: "Services", href: "/services" },
   { label: "Events", href: "/events" },
   { label: "About", href: "/about" },

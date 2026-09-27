@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import Image from "next/image";
-import Link from "next/link";
-import { ChevronDown, Phone, Mail } from "lucide-react";
+import { ChevronDown, Mail, MapPin, Phone } from "lucide-react";
 import { emptyContent, getContent } from "@/lib/data";
 import { ValueProps } from "@/components/about/ValueProps";
 import { Testimonials } from "@/components/about/Testimonials";
+import { ContactForm } from "@/components/contact/ContactForm";
 import { DEFAULT_CONTACT } from "@/lib/contact";
 
 export const metadata: Metadata = {
@@ -12,15 +12,6 @@ export const metadata: Metadata = {
   description:
     "Stayuga is Hyderabad's one-stop farmhouse company — premium stays, dining, décor and full event management under a single point of contact.",
 };
-
-/** The five things we actually deliver, in the order guests ask for them. */
-const PILLARS = [
-  { n: "01", title: "Premium Stays", copy: "Farmhouses chosen for privacy, space and keeping." },
-  { n: "02", title: "Food & Catering", copy: "From a chef's table for eight to a banquet for three hundred." },
-  { n: "03", title: "Décor & Themes", copy: "Styled to the occasion, built on site." },
-  { n: "04", title: "Event Management", copy: "Run end to end, from walkthrough to wrap." },
-  { n: "05", title: "Hospitality", copy: "A trained on-ground team for the length of your stay." },
-];
 
 export default async function AboutPage() {
   const { blocks, faqs, testimonials } = await getContent().catch(emptyContent);
@@ -69,26 +60,6 @@ export default async function AboutPage() {
         </div>
       </section>
 
-      {/* ---------------- 3 · WHAT WE DO ---------------- */}
-      <section className="border-t border-line py-16">
-        <div className="mx-auto max-w-7xl px-6">
-          <div className="mb-10 text-center">
-            <span className="eyebrow mb-3 text-ink-soft">What we do</span>
-            <h2 className="font-display text-3xl font-light text-ink">Five parts, one team</h2>
-          </div>
-
-          <div className="grid grid-cols-1 gap-px border border-line bg-line sm:grid-cols-2 lg:grid-cols-5">
-            {PILLARS.map(({ n, title, copy }) => (
-              <div key={n} className="bg-cream p-6">
-                <span className="font-display text-sm text-gold">{n}</span>
-                <h3 className="font-display mt-3 text-lg font-normal text-ink">{title}</h3>
-                <p className="mt-2 text-sm font-light leading-relaxed text-ink-soft">{copy}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* ---------------- 4 · WHY STAYUGA ---------------- */}
       <section className="border-t border-line">
         <ValueProps />
@@ -125,7 +96,7 @@ export default async function AboutPage() {
         </section>
       )}
 
-      {/* ---------------- 6 · CONCIERGE ---------------- */}
+      {/* ---------------- 6 · CONCIERGE QUICK-CONTACT ---------------- */}
       <section className="bg-ink py-16 text-cream">
         <div className="mx-auto max-w-3xl px-6 text-center">
           <span className="eyebrow mb-3 text-gold">Get in touch</span>
@@ -149,17 +120,64 @@ export default async function AboutPage() {
             </a>
           </div>
 
-          <Link
-            href="/contact"
+          <a
+            href="#contact"
             className="mt-10 inline-flex items-center gap-3 bg-gold px-8 py-3.5 text-[11px] font-medium uppercase tracking-[0.25em] text-ink transition-colors hover:bg-gold-light"
           >
             <span>Send an enquiry</span>
             <span aria-hidden="true">&rarr;</span>
-          </Link>
+          </a>
         </div>
       </section>
 
-      {/* ---------------- 7 · GUEST STORIES ---------------- */}
+      {/* ---------------- 7 · CONTACT US (moved here from the old /contact page) ---------------- */}
+      <section id="contact" className="scroll-mt-24 border-t border-line px-6 py-16 sm:px-12">
+        <div className="mx-auto max-w-6xl">
+          <div className="mx-auto mb-12 max-w-2xl text-center">
+            <span className="eyebrow mb-3 text-ink-soft">Contact us</span>
+            <h2 className="font-display text-3xl font-light text-ink sm:text-4xl">
+              We&rsquo;d love to help you plan your stay
+            </h2>
+            <p className="mt-4 text-sm font-light leading-relaxed text-ink-soft">
+              Share a few details and our team will respond within a day — or reach us directly below.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-10 lg:grid-cols-3">
+            <div className="space-y-6 lg:col-span-1">
+              <div className="rounded-2xl border border-line/70 bg-shell p-6">
+                <div className="flex items-start gap-3">
+                  <Mail size={18} className="mt-0.5 text-gold" />
+                  <div>
+                    <p className="text-sm font-medium text-ink">Email</p>
+                    <p className="text-sm text-ink-soft">{contact.email}</p>
+                  </div>
+                </div>
+                <div className="mt-5 flex items-start gap-3">
+                  <Phone size={18} className="mt-0.5 text-gold" />
+                  <div>
+                    <p className="text-sm font-medium text-ink">Phone</p>
+                    <p className="text-sm text-ink-soft">{contact.phone}</p>
+                  </div>
+                </div>
+                <div className="mt-5 flex items-start gap-3">
+                  <MapPin size={18} className="mt-0.5 text-gold" />
+                  <div>
+                    <p className="text-sm font-medium text-ink">Office</p>
+                    <p className="text-sm text-ink-soft">{contact.location}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-line/70 bg-white p-8 lg:col-span-2">
+              <ContactForm />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ---------------- 8 · GUEST STORIES ---------------- */}
       <Testimonials testimonials={testimonials} />
     </div>
   );

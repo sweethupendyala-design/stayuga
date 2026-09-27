@@ -118,3 +118,18 @@ export interface Testimonial {
   context: string;
   order: number;
 }
+
+export interface Service {
+  _id: string;
+  title: string;
+  desc: string;
+  category: "stay" | "event";
+  /** Matches a key in the shared amenity/service ICONS map. */
+  icon: string;
+  priceFrom: number | null;
+  unit?: string;
+  image: string;
+  promoText?: string;
+  comingSoon?: boolean;
+  order: number;
+}

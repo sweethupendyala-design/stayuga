@@ -27,7 +27,9 @@ export type IconKey =
   | "decor"
   | "transport"
   | "spa"
-  | "music";
+  | "music"
+  | "breakfast"
+  | "view";
 
 export interface AddOnService {
   id: string;
